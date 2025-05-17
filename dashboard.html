@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Study Assist</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Study Assist</h2>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/60" alt="User Avatar">
+                </div>
+                <div class="user-details">
+                    <h3 id="user-name">John Doe</h3>
+                    <p id="user-email">john@example.com</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a href="self-study.html"><span class="icon">📚</span> Self-Study Mode</a></li>
+                    <li><a href="guided-study.html"><span class="icon">🧠</span> Guided Study Mode</a></li>
+                    <li><a href="#"><span class="icon">📝</span> Notes</a></li>
+                    <li><a href="#"><span class="icon">⏱️</span> Session History</a></li>
+                    <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-outline">Logout</button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary">Start New Session</button>
+                </div>
+            </header>
+            
+            <div class="dashboard-overview">
+                <div class="stat-card">
+                    <h3>Study Time</h3>
+                    <div class="stat-value">12h 30m</div>
+                    <p>This week</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Focus Score</h3>
+                    <div class="stat-value">85%</div>
+                    <p>Average</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Sessions</h3>
+                    <div class="stat-value">8</div>
+                    <p>This week</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Streak</h3>
+                    <div class="stat-value">4 days</div>
+                    <p>Current</p>
+                </div>
+            </div>
+            
+            <section class="study-modes-section">
+                <h2>Study Modes</h2>
+                <div class="mode-cards">
+                    <div class="mode-card">
+                        <div class="mode-icon">📚</div>
+                        <h3>Self-Study Mode</h3>
+                        <p>Study with minimal digital distractions. Block websites and focus on your materials.</p>
+                        <a href="self-study.html" class="btn btn-primary">Start</a>
+                    </div>
+                    <div class="mode-card">
+                        <div class="mode-icon">🧠</div>
+                        <h3>Guided Study Mode</h3>
+                        <p>Get step-by-step guidance to create and manage focused study sessions.</p>
+                        <a href="guided-study.html" class="btn btn-primary">Start</a>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="recent-activity">
+                <h2>Recent Activity</h2>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">📚</div>
+                        <div class="activity-details">
+                            <h4>Self-Study Session</h4>
+                            <p>90 minutes of focused study</p>
+                            <span class="activity-time">Today, 3:15 PM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">🧠</div>
+                        <div class="activity-details">
+                            <h4>Guided Study Session</h4>
+                            <p>Completed 3 study blocks with breaks</p>
+                            <span class="activity-time">Yesterday, 7:30 PM</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">⏱️</div>
+                        <div class="activity-details">
+                            <h4>Focus Streak Increased</h4>
+                            <p>You've studied for 3 days in a row!</p>
+                            <span class="activity-time">Yesterday, 8:45 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

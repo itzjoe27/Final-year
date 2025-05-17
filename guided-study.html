@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided Study Mode - Study Assist</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Study Assist</h2>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/60" alt="User Avatar">
+                </div>
+                <div class="user-details">
+                    <h3 id="user-name">John Doe</h3>
+                    <p id="user-email">john@example.com</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a href="self-study.html"><span class="icon">📚</span> Self-Study Mode</a></li>
+                    <li class="active"><a href="guided-study.html"><span class="icon">🧠</span> Guided Study Mode</a></li>
+                    <li><a href="#"><span class="icon">📝</span> Notes</a></li>
+                    <li><a href="#"><span class="icon">⏱️</span> Session History</a></li>
+                    <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-outline">Logout</button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Guided Study Mode</h1>
+                <div class="header-actions">
+                    <a href="dashboard.html" class="btn btn-outline">Back to Dashboard</a>
+                </div>
+            </header>
+            
+            <div class="guided-study-container">
+                <div class="stepper">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-text">Set Goals</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Plan Session</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-text">Study</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-text">Review</div>
+                    </div>
+                </div>
+                
+                <!-- Step 1: Set Goals -->
+                <div class="step-content" id="step-1">
+                    <h2>Set Your Study Goals</h2>
+                    <p>Let's start by defining what you want to accomplish in this study session.</p>
+                    
+                    <form id="goals-form">
+                        <div class="form-group">
+                            <label for="subject">Subject/Course</label>
+                            <input type="text" id="subject" name="subject" placeholder="E.g., Software Engineering" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="topic">Specific Topic</label>
+                            <input type="text" id="topic" name="topic" placeholder="E.g., UML Diagrams" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="learning-objective">Primary Learning Objective</label>
+                            <textarea id="learning-objective" name="learning-objective" rows="2" placeholder="What do you want to learn or accomplish?" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Type of Learning Activity</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="memorization" name="activity-type" value="memorization">
+                                    <label for="memorization">Memorization/Review</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="project" name="activity-type" value="project">
+                                    <label for="project">Project Work</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" id="next-step-1" class="btn btn-primary btn-block">Next: Plan Your Session</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Step 2: Plan Session -->
+                <div class="step-content" id="step-2" style="display: none;">
+                    <h2>Plan Your Study Session</h2>
+                    <p>Now, let's structure your study session for maximum effectiveness.</p>
+                    
+                    <form id="plan-form">
+                        <div class="form-group">
+                            <label for="total-time">Total Study Time</label>
+                            <select id="total-time" name="total-time" required>
+                                <option value="30">30 minutes</option>
+                                <option value="60" selected>1 hour</option>
+                                <option value="90">1.5 hours</option>
+                                <option value="120">2 hours</option>
+                                <option value="180">3 hours</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="custom-time-group" style="display: none;">
+                            <label for="custom-time">Custom Time (minutes)</label>
+                            <input type="number" id="custom-time" name="custom-time" min="15" max="360">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="study-method">Recommended Study Method</label>
+                            <select id="study-method" name="study-method" required>
+                                <option value="pomodoro">Pomodoro Technique (25 min study, 5 min break)</option>
+                                <option value="blocks">Study Blocks (50 min study, 10 min break)</option>
+                                <option value="spaced">Spaced Repetition (Varied intervals)</option>
+                                <option value="flowtime">Flowtime Technique (Flexible timing)</option>
+                            </select>
+                            <div class="method-info" id="method-info">
+                                <p><strong>Pomodoro Technique:</strong> Work for 25 minutes, then take a 5-minute break. After 4 pomodoros, take a longer 15-30 minute break.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Study Materials</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="textbooks" name="materials" value="textbooks">
+                                    <label for="textbooks">Textbooks</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="notes" name="materials" value="notes">
+                                    <label for="notes">Lecture Notes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="online" name="materials" value="online">
+                                    <label for="online">Online Resources</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="practice" name="materials" value="practice">
+                                    <label for="practice">Practice Problems</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="other" name="materials" value="other">
+                                    <label for="other">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="distractions">Distractions to Block</label>
+                            <select id="distractions" name="distractions" multiple required>
+                                <option value="social" selected>Social Media</option>
+                                <option value="video" selected>Video Platforms</option>
+                                <option value="news">News Websites</option>
+                                <option value="shopping">Shopping Websites</option>
+                                <option value="games">Gaming Websites</option>
+                                <option value="email">Email</option>
+                            </select>
+                            <small>Hold Ctrl (or Cmd) to select multiple options</small>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="button" id="prev-step-2" class="btn btn-outline">Back</button>
+                            <button type="button" id="next-step-2" class="btn btn-primary">Next: Start Studying</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Step 3: Study Session -->
+                <div class="step-content" id="step-3" style="display: none;">
+                    <div class="session-header">
+                        <h2 id="session-subject-display">Software Engineering - UML Diagrams</h2>
+                        <div class="session-timer-container">
+                            <div id="session-timer" class="session-timer">25:00</div>
+                            <div class="timer-controls">
+                                <button id="pause-timer-btn" class="btn btn-icon">⏸️</button>
+                                <button id="skip-break-btn" class="btn btn-icon" style="display: none;">⏭️</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="session-status">
+                        <div id="status-icon" class="status-icon">⏱️</div>
+                        <div id="status-message" class="status-message">Study Block 1 of 4</div>
+                    </div>
+                    
+                    <div class="session-guidance">
+                        <h3>Current Task</h3>
+                        <p id="current-task">Focus on understanding the basics of UML Class Diagrams</p>
+                        
+                        <div id="study-tips" class="study-tips">
+                            <h4>Study Tips</h4>
+                            <ul>
+                                <li>Take notes in your own words to improve understanding</li>
+                                <li>Draw examples of class diagrams to reinforce concepts</li>
+                                <li>Try to explain the concepts out loud to test your understanding</li>
+                            </ul>
+                        </div>
+                        
+                        <div id="break-tips" class="break-tips" style="display: none;">
+                            <h4>Break Tips</h4>
+                            <ul>
+                                <li>Stand up and stretch</li>
+                                <li>Drink some water</li>
+                                <li>Look away from your screen to rest your eyes</li>
+                                <li>Take a few deep breaths</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <h3>Session Progress</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 25%;"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span>25% Complete</span>
+                            <span>45 minutes remaining</span>
+                        </div>
+                    </div>
+                    
+                    <div class="session-controls">
+                        <button id="end-session-btn" class="btn btn-danger">End Session Early</button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Review -->
+                <div class="step-content" id="step-4" style="display: none;">
+                    <div class="completion-icon">✅</div>
+                    <h2>Study Session Complete!</h2>
+                    
+                    <div class="session-summary">
+                        <h3>Session Summary</h3>
+                        <div class="summary-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Subject</span>
+                                <span class="stat-value" id="summary-subject">Software Engineering</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Topic</span>
+                                <span class="stat-value" id="summary-topic">UML Diagrams</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Duration</span>
+                                <span class="stat-value" id="summary-duration">60 minutes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Study Method</span>
+                                <span class="stat-value" id="summary-method">Pomodoro Technique</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accomplishment">What did you accomplish?</label>
+                        <textarea id="accomplishment" name="accomplishment" rows="2" placeholder="What did you learn or complete during this session?"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="effectiveness">How effective was this study session?</label>
+                        <div class="rating">
+                            <input type="radio" id="star5" name="effectiveness" value="5">
+                            <label for="star5">5</label>
+                            <input type="radio" id="star4" name="effectiveness" value="4">
+                            <label for="star4">4</label>
+                            <input type="radio" id="star3" name="effectiveness" value="3" checked>
+                            <label for="star3">3</label>
+                            <input type="radio" id="star2" name="effectiveness" value="2">
+                            <label for="star2">2</label>
+                            <input type="radio" id="star1" name="effectiveness" value="1">
+                            <label for="star1">1</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="next-steps">Next Steps</label>
+                        <textarea id="next-steps" name="next-steps" rows="2" placeholder="What would you like to focus on in your next study session?"></textarea>
+                    </div>
+                    
+                    <div class="completion-actions">
+                        <button id="save-guided-btn" class="btn btn-primary">Save Session</button>
+                        <button id="new-guided-btn" class="btn btn-secondary">Start New Session</button>
+                        <a href="dashboard.html" class="btn btn-outline">Return to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/app.js"></script>
+    <script src="js/guided-mode.js"></script>
+</body>
+</html>
+                                    <input type="radio" id="reading" name="activity-type" value="reading" checked>
+                                    <label for="reading">Reading/Understanding</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="practice" name="activity-type" value="practice">
+                                    <label for="practice">Practice/Problem Solving</label>
+                                </div>
+                                <div class="radio-item">
