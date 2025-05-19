@@ -291,26 +291,33 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const nextSteps = document.getElementById('next-steps')?.value || '';
             
-            // In a real application, this would save to a server
-            // For this demo, we'll just store in local storage
+            // Calculate actual duration in minutes
+            const startTime = sessionData.startTime || new Date();
+            const endTime = sessionData.endTime || new Date();
+            const durationMinutes = Math.round((endTime - startTime) / (1000 * 60));
             
-            const previousSessions = JSON.parse(localStorage.getItem('guidedSessions') || '[]');
-            
-            const sessionToSave = {
+            // Prepare session data for saving
+            const fullSessionData = {
                 ...sessionData,
                 accomplishment,
-                effectiveness,
+                effectiveness: parseInt(effectiveness),
                 nextSteps,
-                endTime: new Date()
+                endTime,
+                duration: durationMinutes,
+                focusScore: effectiveness * 20 // Convert 1-5 scale to percentage (20-100)
             };
             
-            previousSessions.push(sessionToSave);
-            localStorage.setItem('guidedSessions', JSON.stringify(previousSessions));
-            
-            alert('Session saved successfully!');
-            
-            // Return to dashboard
-            window.location.href = 'dashboard.html';
+            // Save using SessionData module
+            if (window.SessionData) {
+                window.SessionData.saveSession('guided', fullSessionData);
+                alert('Session saved successfully!');
+                
+                // Return to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                console.error('SessionData module not found');
+                alert('Error saving session. Please try again.');
+            }
         });
     }
     

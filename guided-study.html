@@ -6,6 +6,7 @@
     <title>Guided Study Mode - Study Assist</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/additional.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -30,7 +31,7 @@
                     <li class="active"><a href="guided-study.html"><span class="icon">🧠</span> Guided Study Mode</a></li>
                     <li><a href="#"><span class="icon">📝</span> Notes</a></li>
                     <li><a href="#"><span class="icon">⏱️</span> Session History</a></li>
-                    <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+                    <li><a href="settings.html"><span class="icon">⚙️</span> Settings</a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -90,6 +91,14 @@
                         <div class="form-group">
                             <label>Type of Learning Activity</label>
                             <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="reading" name="activity-type" value="reading" checked>
+                                    <label for="reading">Reading/Understanding</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="practice" name="activity-type" value="practice">
+                                    <label for="practice">Practice/Problem Solving</label>
+                                </div>
                                 <div class="radio-item">
                                     <input type="radio" id="memorization" name="activity-type" value="memorization">
                                     <label for="memorization">Memorization/Review</label>
@@ -311,14 +320,8 @@
     </div>
     
     <script src="js/app.js"></script>
+    <script src="js/session-data.js"></script>
+    <script src="js/settings.js"></script>
     <script src="js/guided-mode.js"></script>
 </body>
 </html>
-                                    <input type="radio" id="reading" name="activity-type" value="reading" checked>
-                                    <label for="reading">Reading/Understanding</label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="practice" name="activity-type" value="practice">
-                                    <label for="practice">Practice/Problem Solving</label>
-                                </div>
-                                <div class="radio-item">

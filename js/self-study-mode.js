@@ -149,24 +149,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get session notes
             const sessionNotes = document.getElementById('session-notes').value;
             
-            // In a real application, this would save the session data to a server
-            // For this demo, we'll just store the data in local storage
+            // Calculate focus score
+            const calculatedFocusScore = calculateFocusScore();
             
-            const previousSessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
-            
+            // Prepare session data for saving
             const sessionToSave = {
                 ...sessionData,
                 notes: sessionNotes,
-                focusScore: calculateFocusScore()
+                focusScore: calculatedFocusScore
             };
             
-            previousSessions.push(sessionToSave);
-            localStorage.setItem('studySessions', JSON.stringify(previousSessions));
-            
-            alert('Session saved successfully!');
-            
-            // Return to dashboard
-            window.location.href = 'dashboard.html';
+            // Save using the SessionData module
+            if (window.SessionData) {
+                window.SessionData.saveSession('self', sessionToSave);
+                alert('Session saved successfully!');
+                
+                // Return to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                console.error('SessionData module not found');
+                alert('Error saving session. Please try again.');
+            }
         });
     }
     
