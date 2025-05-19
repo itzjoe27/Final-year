@@ -114,9 +114,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const subject = document.getElementById('subject').value;
             const topic = document.getElementById('topic').value;
             const objective = document.getElementById('learning-objective').value;
-            const activityType = document.querySelector('input[name="activity-type"]:checked').value;
+            const activityTypeRadios = document.querySelectorAll('input[name="activity-type"]');
+            let activityType = '';
             
-            if (!subject || !topic || !objective) {
+            for (let radio of activityTypeRadios) {
+                if (radio.checked) {
+                    activityType = radio.value;
+                    break;
+                }
+            }
+            
+            if (!subject || !topic || !objective || !activityType) {
                 alert('Please fill out all required fields');
                 return;
             }
@@ -162,10 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get distractions
             const distractions = [];
             const distractionsSelect = document.getElementById('distractions');
-            for (let i = 0; i < distractionsSelect.options.length; i++) {
-                if (distractionsSelect.options[i].selected) {
-                    distractions.push(distractionsSelect.options[i].text);
+            if (distractionsSelect) {
+                for (let i = 0; i < distractionsSelect.options.length; i++) {
+                    if (distractionsSelect.options[i].selected) {
+                        distractions.push(distractionsSelect.options[i].text);
+                    }
                 }
+            }
+            
+            // Validate materials
+            if (materials.length === 0) {
+                alert('Please select at least one study material');
+                return;
             }
             
             // Store step 2 data
@@ -177,28 +193,45 @@ document.addEventListener('DOMContentLoaded', () => {
             // Calculate study blocks based on method and total time
             const methodConfig = methodConfigs[studyMethod];
             sessionData.totalBlocks = Math.floor(totalTime / (methodConfig.workTime + methodConfig.breakTime));
+            if (sessionData.totalBlocks < 1) sessionData.totalBlocks = 1;
             sessionData.currentBlock = 1;
             sessionData.isBreak = false;
             sessionData.startTime = new Date();
             
             // Update UI for step 3
-            document.getElementById('session-subject-display').textContent = `${sessionData.subject} - ${sessionData.topic}`;
-            document.getElementById('status-message').textContent = `Study Block 1 of ${sessionData.totalBlocks}`;
-            document.getElementById('current-task').textContent = sessionData.objective;
+            const sessionSubjectDisplay = document.getElementById('session-subject-display');
+            const statusMessage = document.getElementById('status-message');
+            const currentTask = document.getElementById('current-task');
+            
+            if (sessionSubjectDisplay) {
+                sessionSubjectDisplay.textContent = `${sessionData.subject} - ${sessionData.topic}`;
+            }
+            
+            if (statusMessage) {
+                statusMessage.textContent = `Study Block 1 of ${sessionData.totalBlocks}`;
+            }
+            
+            if (currentTask) {
+                currentTask.textContent = sessionData.objective;
+            }
             
             // Start timer with work time
             const timerElement = document.getElementById('session-timer');
             const workTimeInSeconds = methodConfig.workTime * 60;
-            sessionTimer = createTimer(workTimeInSeconds, timerElement, onTimerComplete);
-            sessionTimer.start();
+            if (timerElement) {
+                sessionTimer = createTimer(workTimeInSeconds, timerElement, onTimerComplete);
+                sessionTimer.start();
+            }
             
             // Show study tips based on activity type
             updateStudyTips(sessionData.activityType);
             
-            // Block distractions
-            blockDistractions(sessionData.distractions);
+            // Simulate blocking distractions
+            if (distractions.length > 0) {
+                console.log(`Blocking distractions: ${distractions.join(', ')}`);
+            }
             
-            // Update progress bar
+            // Update progress
             updateProgress();
             
             // Move to step 3
@@ -226,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const skipBreakBtn = document.getElementById('skip-break-btn');
     if (skipBreakBtn) {
         skipBreakBtn.addEventListener('click', () => {
-            if (!sessionData.isBreak) return;
+            if (!sessionData.isBreak || !sessionTimer) return;
             
             onTimerComplete();
         });
@@ -245,9 +278,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saveGuidedBtn) {
         saveGuidedBtn.addEventListener('click', () => {
             // Get session data
-            const accomplishment = document.getElementById('accomplishment').value;
-            const effectiveness = document.querySelector('input[name="effectiveness"]:checked').value;
-            const nextSteps = document.getElementById('next-steps').value;
+            const accomplishment = document.getElementById('accomplishment')?.value || '';
+            const effectivenessRadios = document.querySelectorAll('input[name="effectiveness"]');
+            let effectiveness = '3'; // Default to middle value
+            
+            for (let radio of effectivenessRadios) {
+                if (radio.checked) {
+                    effectiveness = radio.value;
+                    break;
+                }
+            }
+            
+            const nextSteps = document.getElementById('next-steps')?.value || '';
             
             // In a real application, this would save to a server
             // For this demo, we'll just store in local storage
@@ -276,8 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newGuidedBtn) {
         newGuidedBtn.addEventListener('click', () => {
             // Reset forms
-            document.getElementById('goals-form').reset();
-            document.getElementById('plan-form').reset();
+            const goalsForm = document.getElementById('goals-form');
+            const planForm = document.getElementById('plan-form');
+            
+            if (goalsForm) goalsForm.reset();
+            if (planForm) planForm.reset();
             
             // Go back to step 1
             goToStep(1);
@@ -312,20 +357,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateMethodInfo() {
+        if (!methodInfo || !studyMethodSelect) return;
+        
         const selectedMethod = studyMethodSelect.value;
-        methodInfo.innerHTML = methodDescriptions[selectedMethod];
+        methodInfo.innerHTML = methodDescriptions[selectedMethod] || '';
     }
     
     function updateStudyTips(activityType) {
         const studyTipsElement = document.getElementById('study-tips');
         if (!studyTipsElement) return;
         
-        const tipsHTML = activityTips[activityType].map(tip => `<li>${tip}</li>`).join('');
-        studyTipsElement.querySelector('ul').innerHTML = tipsHTML;
+        const tipsList = studyTipsElement.querySelector('ul');
+        if (!tipsList) return;
+        
+        const tips = activityTips[activityType] || activityTips['reading']; // Default to reading tips
+        tipsList.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
     }
     
     function onTimerComplete() {
+        if (!sessionData || !methodConfigs) return;
+        
         const methodConfig = methodConfigs[sessionData.studyMethod];
+        if (!methodConfig) return;
         
         if (sessionData.isBreak) {
             // Finished a break, start next study block
@@ -339,19 +392,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Update UI for study block
-            document.getElementById('status-icon').textContent = '⏱️';
-            document.getElementById('status-message').textContent = `Study Block ${sessionData.currentBlock} of ${sessionData.totalBlocks}`;
-            document.getElementById('study-tips').style.display = 'block';
-            document.getElementById('break-tips').style.display = 'none';
+            const statusIcon = document.getElementById('status-icon');
+            const statusMessage = document.getElementById('status-message');
+            const studyTips = document.getElementById('study-tips');
+            const breakTips = document.getElementById('break-tips');
+            const skipBreakBtn = document.getElementById('skip-break-btn');
             
-            // Update skip break button
-            document.getElementById('skip-break-btn').style.display = 'none';
+            if (statusIcon) statusIcon.textContent = '⏱️';
+            if (statusMessage) statusMessage.textContent = `Study Block ${sessionData.currentBlock} of ${sessionData.totalBlocks}`;
+            if (studyTips) studyTips.style.display = 'block';
+            if (breakTips) breakTips.style.display = 'none';
+            if (skipBreakBtn) skipBreakBtn.style.display = 'none';
             
             // Start timer with work time
             const timerElement = document.getElementById('session-timer');
             const workTimeInSeconds = methodConfig.workTime * 60;
-            sessionTimer = createTimer(workTimeInSeconds, timerElement, onTimerComplete);
-            sessionTimer.start();
+            
+            if (timerElement && typeof createTimer === 'function') {
+                sessionTimer = createTimer(workTimeInSeconds, timerElement, onTimerComplete);
+                sessionTimer.start();
+            }
         } else {
             // Finished a study block, start break
             sessionData.isBreak = true;
@@ -361,20 +421,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const breakTimeInSeconds = (isLongBreak ? methodConfig.longBreakTime : methodConfig.breakTime) * 60;
             
             // Update UI for break
-            document.getElementById('status-icon').textContent = '☕';
-            document.getElementById('status-message').textContent = isLongBreak ? 
-                `Long Break (${methodConfig.longBreakTime} min)` : 
-                `Short Break (${methodConfig.breakTime} min)`;
-            document.getElementById('study-tips').style.display = 'none';
-            document.getElementById('break-tips').style.display = 'block';
+            const statusIcon = document.getElementById('status-icon');
+            const statusMessage = document.getElementById('status-message');
+            const studyTips = document.getElementById('study-tips');
+            const breakTips = document.getElementById('break-tips');
+            const skipBreakBtn = document.getElementById('skip-break-btn');
             
-            // Update skip break button
-            document.getElementById('skip-break-btn').style.display = 'inline-block';
+            if (statusIcon) statusIcon.textContent = '☕';
+            if (statusMessage) {
+                statusMessage.textContent = isLongBreak ? 
+                    `Long Break (${methodConfig.longBreakTime} min)` : 
+                    `Short Break (${methodConfig.breakTime} min)`;
+            }
+            if (studyTips) studyTips.style.display = 'none';
+            if (breakTips) breakTips.style.display = 'block';
+            if (skipBreakBtn) skipBreakBtn.style.display = 'inline-block';
             
             // Start timer with break time
             const timerElement = document.getElementById('session-timer');
-            sessionTimer = createTimer(breakTimeInSeconds, timerElement, onTimerComplete);
-            sessionTimer.start();
+            
+            if (timerElement && typeof createTimer === 'function') {
+                sessionTimer = createTimer(breakTimeInSeconds, timerElement, onTimerComplete);
+                sessionTimer.start();
+            }
         }
         
         // Update progress
@@ -385,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const progressBar = document.querySelector('.progress');
         const progressStats = document.querySelector('.progress-stats');
         
-        if (!progressBar || !progressStats) return;
+        if (!progressBar || !progressStats || !sessionData) return;
         
         // Calculate progress percentage
         let progressPercentage = 0;
@@ -400,17 +469,25 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = `${progressPercentage}%`;
         
         // Update progress stats
-        const completionText = document.createElement('span');
-        completionText.textContent = `${Math.round(progressPercentage)}% Complete`;
-        
-        const remainingText = document.createElement('span');
-        const remainingMinutes = Math.round((sessionData.totalBlocks - sessionData.currentBlock + (sessionData.isBreak ? 0 : 1)) * 
-            (methodConfigs[sessionData.studyMethod].workTime + methodConfigs[sessionData.studyMethod].breakTime));
-        remainingText.textContent = `${remainingMinutes} minutes remaining`;
-        
-        progressStats.innerHTML = '';
-        progressStats.appendChild(completionText);
-        progressStats.appendChild(remainingText);
+        if (methodConfigs && sessionData.studyMethod) {
+            const completionText = document.createElement('span');
+            completionText.textContent = `${Math.round(progressPercentage)}% Complete`;
+            
+            const remainingText = document.createElement('span');
+            const methodConfig = methodConfigs[sessionData.studyMethod];
+            
+            if (methodConfig) {
+                const remainingMinutes = Math.round(
+                    (sessionData.totalBlocks - sessionData.currentBlock + (sessionData.isBreak ? 0 : 1)) * 
+                    (methodConfig.workTime + methodConfig.breakTime)
+                );
+                remainingText.textContent = `${remainingMinutes} minutes remaining`;
+            }
+            
+            progressStats.innerHTML = '';
+            progressStats.appendChild(completionText);
+            progressStats.appendChild(remainingText);
+        }
     }
     
     function completeSession() {
@@ -423,10 +500,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionData.endTime = new Date();
         
         // Update summary UI
-        document.getElementById('summary-subject').textContent = sessionData.subject;
-        document.getElementById('summary-topic').textContent = sessionData.topic;
-        document.getElementById('summary-duration').textContent = `${sessionData.totalTime} minutes`;
-        document.getElementById('summary-method').textContent = studyMethodSelect.options[studyMethodSelect.selectedIndex].text;
+        const summarySubject = document.getElementById('summary-subject');
+        const summaryTopic = document.getElementById('summary-topic');
+        const summaryDuration = document.getElementById('summary-duration');
+        const summaryMethod = document.getElementById('summary-method');
+        
+        if (summarySubject) summarySubject.textContent = sessionData.subject;
+        if (summaryTopic) summaryTopic.textContent = sessionData.topic;
+        if (summaryDuration) summaryDuration.textContent = `${sessionData.totalTime} minutes`;
+        
+        if (summaryMethod && studyMethodSelect) {
+            const selectedOption = studyMethodSelect.options[studyMethodSelect.selectedIndex];
+            summaryMethod.textContent = selectedOption ? selectedOption.text : sessionData.studyMethod;
+        }
         
         // Go to step 4
         goToStep(4);

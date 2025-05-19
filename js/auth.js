@@ -35,7 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('remember') ? document.getElementById('remember').checked : false;
+            const rememberMe = document.getElementById('remember')?.checked || false;
+            
+            // Basic validation
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
             
             // In a real application, this would validate credentials against a server
             // For this demo, we'll accept any credentials
@@ -43,11 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Store user in local storage
             const userData = {
                 email: email,
-                name: email.split('@')[0] // Use part of email as name for demo
+                name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1) // Capitalize first letter
             };
             
             localStorage.setItem('studyAssistLoggedIn', 'true');
             localStorage.setItem('studyAssistUser', JSON.stringify(userData));
+            
+            // Remember me functionality
+            if (rememberMe) {
+                localStorage.setItem('studyAssistRemember', 'true');
+            } else {
+                localStorage.removeItem('studyAssistRemember');
+            }
             
             // Redirect to dashboard
             window.location.href = 'dashboard.html';
@@ -65,8 +78,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmPassword = document.getElementById('reg-confirm-password').value;
             
             // Simple validation
+            if (!name || !email || !password || !confirmPassword) {
+                alert('Please fill out all fields');
+                return;
+            }
+            
             if (password !== confirmPassword) {
                 alert('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
                 return;
             }
             
@@ -85,4 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'dashboard.html';
         });
     }
-});z
+    
+    // Check if "remember me" was previously selected
+    const remembered = localStorage.getItem('studyAssistRemember') === 'true';
+    if (remembered && document.getElementById('remember')) {
+        document.getElementById('remember').checked = true;
+    }
+});

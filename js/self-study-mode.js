@@ -33,11 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
         startTime: null,
         endTime: null,
         isPaused: false,
-        pauseTime: 0
+        pauseCount: 0
     };
     
     let timer = null;
-    let distractionBlocker = null;
     
     // Show custom duration field if 'custom' is selected
     if (sessionDurationSelect) {
@@ -83,6 +82,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 blockedDistractions: blockedDistractions,
                 customWebsites: customWebsites,
                 startTime: new Date(),
+                endTime: null,
+                isPaused: false,
+                pauseCount: 0
+            };
+            
+            // Update UI
+            sessionTitleDisplay.textContent = sessionData.title;
+            blockedSitesList.textContent = sessionData.blockedDistractions.join(', ');
+            if (sessionData.customWebsites.length > 0) {
+                blockedSitesList.textContent += ', ' + sessionData.customWebsites.join(', ');
+            }
+            
+            // Start timer
+            timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
+            timer.start();
+            
+            // Simulate blocking distractions
+            console.log(`Blocking distractions: ${[...sessionData.blockedDistractions, ...sessionData.customWebsites].join(', ')}`);
+            
+            // Show study session
+            setupSection.style.display = 'none';
+            studySession.style.display = 'block';
+        });
+    }
+    
+    // Handle pause/resume timer
+    if (pauseTimerBtn) {
+        pauseTimerBtn.addEventListener('click', () => {
+            if (!timer) return;
+            
+            if (timer.isPaused()) {
+                timer.resume();
+                pauseTimerBtn.textContent = '⏸️';
+                sessionData.isPaused = false;
+            } else {
+                timer.pause();
+                pauseTimerBtn.textContent = '▶️';
+                sessionData.isPaused = true;
+                sessionData.pauseCount += 1;
+            }
+        });
+    }
+    
+    // Handle stop session
+    if (stopSessionBtn) {
+        stopSessionBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to stop the session?')) {
                 endSession();
             }
         });
@@ -147,9 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Record end time
         sessionData.endTime = new Date();
         
-        // Unblock distractions
-        distractionBlocker = null;
-        
         // Update UI
         completedDuration.textContent = `${sessionData.duration} minutes`;
         focusScore.textContent = `${calculateFocusScore()}%`;
@@ -169,9 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Record end time
         sessionData.endTime = new Date();
         
-        // Unblock distractions
-        distractionBlocker = null;
-        
         // Update UI
         const actualDuration = Math.floor((sessionData.endTime - sessionData.startTime) / (1000 * 60));
         completedDuration.textContent = `${actualDuration} minutes (ended early)`;
@@ -189,58 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // reduced by the number of times the user paused the timer
         
         const baseScore = Math.floor(Math.random() * 30) + 70; // 70-100
-        const pausePenalty = sessionData.pauseTime * 5; // -5 points per pause
+        const pausePenalty = sessionData.pauseCount * 5; // -5 points per pause
         
-        const finalScore = Math.max(baseScore - pausePenalty, 50); // Minimum score of 50
-        
-        return finalScore;
+        return Math.max(baseScore - pausePenalty, 50); // Minimum score of 50
     }
-});dTime: null,
-                isPaused: false,
-                pauseTime: 0
-            };
-            
-            // Update UI
-            sessionTitleDisplay.textContent = sessionData.title;
-            blockedSitesList.textContent = sessionData.blockedDistractions.join(', ');
-            if (sessionData.customWebsites.length > 0) {
-                blockedSitesList.textContent += ', ' + sessionData.customWebsites.join(', ');
-            }
-            
-            // Start timer
-            timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
-            timer.start();
-            
-            // Block distractions
-            const allBlockedItems = [...sessionData.blockedDistractions, ...sessionData.customWebsites];
-            distractionBlocker = blockDistractions(allBlockedItems);
-            
-            // Show study session
-            setupSection.style.display = 'none';
-            studySession.style.display = 'block';
-        });
-    }
-    
-    // Handle pause/resume timer
-    if (pauseTimerBtn) {
-        pauseTimerBtn.addEventListener('click', () => {
-            if (!timer) return;
-            
-            if (timer.isPaused()) {
-                timer.resume();
-                pauseTimerBtn.textContent = '⏸️';
-                sessionData.isPaused = false;
-            } else {
-                timer.pause();
-                pauseTimerBtn.textContent = '▶️';
-                sessionData.isPaused = true;
-                sessionData.pauseTime += 1; // Increment pause time (in a real app, track actual pause duration)
-            }
-        });
-    }
-    
-    // Handle stop session
-    if (stopSessionBtn) {
-        stopSessionBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to stop the session?')) {
-                en
+});

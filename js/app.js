@@ -7,16 +7,24 @@
 // Check if user is logged in
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('studyAssistLoggedIn');
+    const currentPage = window.location.pathname.split('/').pop();
     
-    // If user is not logged in and not on login page, redirect to login page
-    if (!isLoggedIn && !window.location.href.includes('login.html') && !window.location.href.includes('index.html')) {
+    // If user is not logged in and not on login page or homepage, redirect to login
+    if (!isLoggedIn && 
+        !currentPage.includes('login.html') && 
+        !currentPage.includes('index.html') && 
+        currentPage !== '') {
         window.location.href = 'login.html';
+        return false;
     }
     
     // If user is logged in and on login page, redirect to dashboard
-    if (isLoggedIn && window.location.href.includes('login.html')) {
+    if (isLoggedIn && currentPage.includes('login.html')) {
         window.location.href = 'dashboard.html';
+        return false;
     }
+    
+    return true;
 }
 
 // Handle logout
@@ -25,12 +33,18 @@ function handleLogout() {
     
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            // Clear local storage
-            localStorage.removeItem('studyAssistLoggedIn');
-            localStorage.removeItem('studyAssistUser');
-            
-            // Redirect to login page
-            window.location.href = 'login.html';
+            // Confirm logout
+            if (confirm('Are you sure you want to log out?')) {
+                // Clear local storage except for remember me setting
+                const rememberMe = localStorage.getItem('studyAssistRemember');
+                localStorage.clear();
+                if (rememberMe) {
+                    localStorage.setItem('studyAssistRemember', rememberMe);
+                }
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
         });
     }
 }
@@ -48,11 +62,16 @@ function loadUserData() {
     const userNameElement = document.getElementById('user-name');
     const userEmailElement = document.getElementById('user-email');
     
-    if (userNameElement && userEmailElement) {
+    if (userNameElement || userEmailElement) {
         const userData = JSON.parse(localStorage.getItem('studyAssistUser') || '{}');
         
-        userNameElement.textContent = userData.name || 'John Doe';
-        userEmailElement.textContent = userData.email || 'john@example.com';
+        if (userNameElement) {
+            userNameElement.textContent = userData.name || 'Guest User';
+        }
+        
+        if (userEmailElement) {
+            userEmailElement.textContent = userData.email || 'guest@example.com';
+        }
     }
 }
 
@@ -64,7 +83,9 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
     
     // Update the display
     function updateDisplay() {
-        displayElement.textContent = formatTime(timeRemaining);
+        if (displayElement) {
+            displayElement.textContent = formatTime(timeRemaining);
+        }
     }
     
     // Start the timer
@@ -72,6 +93,8 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
         if (timerId) return; // Timer already running
         
         isPaused = false;
+        updateDisplay(); // Update immediately before starting interval
+        
         timerId = setInterval(() => {
             if (!isPaused) {
                 timeRemaining--;
@@ -79,7 +102,9 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
                 
                 if (timeRemaining <= 0) {
                     stop();
-                    if (onComplete) onComplete();
+                    if (onComplete && typeof onComplete === 'function') {
+                        onComplete();
+                    }
                 }
             }
         }, 1000);
@@ -108,6 +133,11 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
         updateDisplay();
     }
     
+    // Get remaining time
+    function getTimeRemaining() {
+        return timeRemaining;
+    }
+    
     // Initialize display
     updateDisplay();
     
@@ -118,6 +148,7 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
         resume,
         stop,
         reset,
+        getTimeRemaining,
         isPaused: () => isPaused
     };
 }
@@ -129,21 +160,58 @@ function blockDistractions(distractions) {
     // In a real implementation, this would integrate with browser extensions
     // or other technologies to actually block websites and applications
     
-    // For demo purposes, we'll just log the blocked distractions
     return {
         isBlocking: true,
-        blockedItems: distractions
+        blockedItems: distractions,
+        startTime: new Date()
     };
+}
+
+// Update active navigation links
+function updateNavigation() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        link.parentElement.classList.remove('active');
+        
+        if (linkPage === currentPage) {
+            link.parentElement.classList.add('active');
+        }
+    });
 }
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     // Check authentication
-    checkAuth();
+    if (!checkAuth()) return;
     
     // Handle logout button
     handleLogout();
     
     // Load user data
     loadUserData();
+    
+    // Update navigation
+    updateNavigation();
+    
+    // Optional: Display welcome message on dashboard
+    if (window.location.pathname.includes('dashboard.html')) {
+        const userData = JSON.parse(localStorage.getItem('studyAssistUser') || '{}');
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.className = 'welcome-message';
+        welcomeMessage.innerHTML = `<h3>Welcome back, ${userData.name || 'Student'}!</h3>`;
+        
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent && mainContent.firstChild) {
+            mainContent.insertBefore(welcomeMessage, mainContent.firstChild);
+            
+            // Fade out welcome message after 5 seconds
+            setTimeout(() => {
+                welcomeMessage.style.opacity = '0';
+                setTimeout(() => welcomeMessage.remove(), 1000);
+            }, 5000);
+        }
+    }
 });
