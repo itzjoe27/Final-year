@@ -1,10 +1,9 @@
 // login manager
 
 document.addEventListener('DOMContentLoaded', () => {
-console.log("loaded auth"); // troubleshooting
-    
+console.log("loaded auth");
 
-    // Get form elements
+    // Get form
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const showRegisterLink = document.getElementById('showRegister');

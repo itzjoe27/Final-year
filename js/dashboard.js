@@ -1,6 +1,7 @@
 // Functionality for the dashboard
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("initialising dashboard...");
     if (!window.SessionData) {
         console.error('SessionData module not found');
         return;

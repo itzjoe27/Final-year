@@ -1,7 +1,7 @@
 // Main file with functions used on multiple other files
 
-// Check if user is logged in
 function checkAuth() {
+    console.log("Checking authentication status...")
     const isLoggedIn = localStorage.getItem('studyAssistLoggedIn');
     const currentPage = window.location.pathname.split('/').pop();
 
@@ -9,12 +9,14 @@ function checkAuth() {
         !currentPage.includes('login.html') && 
         !currentPage.includes('index.html') && 
         currentPage !== '') {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'index.html';
+        console.log("Not logged in, redirecting to index.html")
         return false;
     }
 
     if (isLoggedIn && currentPage.includes('login.html')) {
         window.location.href = 'dashboard.html';
+        console.log("Logged in, redirecting to dashboard.html")
         return false;
     }
     
@@ -23,7 +25,6 @@ function checkAuth() {
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
@@ -71,6 +72,7 @@ function isSameDay(date1, date2) {
 }
 //timer functionality
 function createTimer(durationInSeconds, displayElement, onComplete) {
+    console.log("Timer made with:", durationInSeconds);
     let timeRemaining = durationInSeconds;
     let timerId = null;
     let isPaused = false;
@@ -82,6 +84,7 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
     }
     
     function start() {
+        console.log('Start time');
         if (timerId) return;
         
         isPaused = false;
@@ -111,6 +114,7 @@ function createTimer(durationInSeconds, displayElement, onComplete) {
     }
     
     function stop() {
+        console.log('Timer stopped');
         clearInterval(timerId);
         timerId = null;
     }
@@ -311,12 +315,7 @@ function setupLogout() {
 document.addEventListener('DOMContentLoaded', () => {
     if (!checkAuth()) return;
     
-    // Apply theme settings
-    applySettings();
-    
-    // Update user profile information
-    updateUserProfile();
-    
-    // Setup logout functionality
-    setupLogout();
+        applySettings();
+        updateUserProfile();
+        setupLogout();
 });
