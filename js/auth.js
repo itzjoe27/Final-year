@@ -1,6 +1,9 @@
 // login manager
 
 document.addEventListener('DOMContentLoaded', () => {
+console.log("loaded auth"); // troubleshooting
+    
+
     // Get form elements
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -24,9 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle login form submission
+
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
+            console.log("login pressed");
             e.preventDefault();
             
             const email = document.getElementById('email').value;
@@ -38,15 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            //skip button to make demo easier - login is not working all the time. Neither is skip for some reason, use whatever works.
     if (skipLoginBtn) {
         skipLoginBtn.addEventListener('click', (e) => {
+            console.log("Skip pressed");
             e.preventDefault();
             
             // Create admin user data
             const adminData = {
                 name: 'Admin User',
                 email: 'admin@studyassist.com',
-                isAdmin: true
             };
             
             // Set admin user in local storage
