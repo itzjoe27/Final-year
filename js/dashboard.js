@@ -1,77 +1,53 @@
-/**
- * Study Assist Web App - Dashboard JavaScript
- * 
- * This file contains functionality for the dashboard page
- */
+// dashboard javascript
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if SessionData is available
     if (!window.SessionData) {
         console.error('SessionData module not found');
         return;
     }
     
-    // Get settings
     const settings = window.getStudyAssistSettings ? window.getStudyAssistSettings() : { showTips: true };
     
-    // Load dashboard data
     loadDashboardStats();
     loadRecentActivity();
     
-    // Add optional welcome message with study tip
-    if (settings.showTips) {
-        addWelcomeMessage();
-    }
     
-    // Function to load dashboard statistics
     function loadDashboardStats() {
         const stats = SessionData.getStats();
         
-        // Update the stats on the dashboard
         document.getElementById('study-time-stat').textContent = stats.weeklyStudyTime;
         document.getElementById('focus-score-stat').textContent = `${stats.averageFocusScore}%`;
         document.getElementById('sessions-stat').textContent = stats.weeklySessionCount;
         document.getElementById('streak-stat').textContent = `${stats.streak} days`;
     }
     
-    // Function to load recent activity
     function loadRecentActivity() {
         const activityList = document.getElementById('activity-list');
         const noActivity = document.getElementById('no-activity');
         const recentSessions = SessionData.getRecentSessions(5);
-        
-        // Show "no activity" message if no sessions are found
         if (recentSessions.length === 0) {
             if (noActivity) noActivity.style.display = 'block';
             return;
         }
-        
-        // Hide "no activity" message
         if (noActivity) noActivity.style.display = 'none';
         
-        // Clear existing content
         activityList.innerHTML = '';
         
-        // Add session items
         recentSessions.forEach(session => {
             const activityItem = createActivityItem(session);
             activityList.appendChild(activityItem);
         });
     }
     
-    // Function to create an activity item
     function createActivityItem(session) {
         const activityItem = document.createElement('div');
         activityItem.className = 'activity-item';
-        
-        // Determine icon based on session type
         const icon = session.type === 'self' ? '📚' : '🧠';
         const sessionTitle = session.title || session.subject || 'Study Session';
         const sessionDate = new Date(session.timestamp || session.endTime || session.startTime);
         const formattedDate = formatDate(sessionDate);
         const sessionDuration = session.duration ? `${session.duration} minutes` : 'Duration not recorded';
         
-        // Create activity details
         let description = '';
         if (session.type === 'self') {
             description = `${sessionDuration} of focused study`;
@@ -79,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
             description = `Completed ${session.currentBlock || '?'} of ${session.totalBlocks || '?'} study blocks`;
         }
         
-        // Build HTML
         activityItem.innerHTML = `
             <div class="activity-icon">${icon}</div>
             <div class="activity-details">
@@ -92,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return activityItem;
     }
     
-    // Function to format date
     function formatDate(date) {
         const now = new Date();
         const yesterday = new Date(now);
@@ -107,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Helper function to check if two dates are the same day
     function isSameDay(date1, date2) {
         return date1.getDate() === date2.getDate() &&
                date1.getMonth() === date2.getMonth() &&
@@ -155,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Function to get a random study tip
+    // random study tips - most tips generated with chatgpt for demo
     function getRandomStudyTip() {
         const studyTips = [
             "Break your study sessions into 25-minute chunks with 5-minute breaks (the Pomodoro Technique).",

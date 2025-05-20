@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Study Assist</title>
+    <!-- make less different style sheets -->
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/additional.css">
@@ -24,13 +25,14 @@
                     <p id="user-email">john@example.com</p>
                 </div>
             </div>
-            <nav class="sidebar-nav">
+            <!-- same navbar used on almost every page -->
+            <nav class="sidebar-nav"> 
                 <ul>
                     <li class="active"><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
                     <li><a href="self-study.html"><span class="icon">📚</span> Self-Study Mode</a></li>
                     <li><a href="guided-study.html"><span class="icon">🧠</span> Guided Study Mode</a></li>
-                    <li><a href="#"><span class="icon">📝</span> Notes</a></li>
-                    <li><a href="#"><span class="icon">⏱️</span> Session History</a></li>
+                    <!-- <li><a href="#"><span class="icon">📝</span> Notes</a></li>  maybe?-->
+                    <li><a href="session-history.html"><span class="icon">⏱️</span> Session History</a></li>
                     <li><a href="settings.html"><span class="icon">⚙️</span> Settings</a></li>
                 </ul>
             </nav>
@@ -97,7 +99,7 @@
             <section class="recent-activity">
                 <h2>Recent Activity</h2>
                 <div class="activity-list" id="activity-list">
-                    <!-- Activities will be loaded dynamically via JavaScript -->
+                    <!-- Activities will be loaded via JavaScript -->
                     <div class="no-activity" id="no-activity">
                         <p>No study sessions recorded yet. Start a new session to track your progress!</p>
                     </div>

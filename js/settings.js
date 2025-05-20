@@ -1,19 +1,12 @@
-/**
- * Study Assist Web App - Settings JavaScript
- * 
- * This file contains functionality for the settings page
- */
+// The javascript for making the settings work
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get settings elements
+// getting the settnings
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const showTipsToggle = document.getElementById('show-tips-toggle');
     const clearDataBtn = document.getElementById('clear-data-btn');
+        loadSettings();
     
-    // Load current settings
-    loadSettings();
-    
-    // Handle dark mode toggle
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', () => {
             const isDarkMode = darkModeToggle.checked;
@@ -22,27 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle show tips toggle
     if (showTipsToggle) {
         showTipsToggle.addEventListener('change', () => {
             localStorage.setItem('showTips', showTipsToggle.checked);
         });
     }
     
-    // Handle clear data
+    // clearing user data
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to clear all your data? This action cannot be undone.')) {
-                // Store the login state and settings before clearing
+                // For keeping user logged in after clearing
                 const isLoggedIn = localStorage.getItem('studyAssistLoggedIn');
                 const userData = localStorage.getItem('studyAssistUser');
                 const darkModeSetting = localStorage.getItem('darkMode');
                 const showTipsSetting = localStorage.getItem('showTips');
                 
-                // Clear all data
+                // should be clearing all the data - not too sure
                 localStorage.clear();
                 
-                // Restore login state and settings
+                // re-login and keep setting presets
                 if (isLoggedIn) {
                     localStorage.setItem('studyAssistLoggedIn', isLoggedIn);
                 }
