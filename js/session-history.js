@@ -1,28 +1,19 @@
-/**
- * Study Assist Web App - Session History JavaScript
- * 
- * This file contains functionality for the session history page
- */
+// session history page javascript
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get elements
     const historyFilter = document.getElementById('history-filter');
     const sessionList = document.getElementById('session-list');
     const sessionDetails = document.getElementById('session-details');
     const noSessionsMessage = document.getElementById('no-sessions-message');
     const backToListBtn = document.getElementById('back-to-list');
     
-    // Load sessions
     loadSessions('all');
-    
-    // Handle filter change
     if (historyFilter) {
         historyFilter.addEventListener('change', () => {
             loadSessions(historyFilter.value);
         });
     }
     
-    // Handle back to list button
     if (backToListBtn) {
         backToListBtn.addEventListener('click', () => {
             sessionDetails.style.display = 'none';
@@ -30,13 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Function to load sessions
     function loadSessions(filter) {
-        // Get sessions from localStorage
         const selfStudySessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
         const guidedSessions = JSON.parse(localStorage.getItem('guidedSessions') || '[]');
         
-        // Filter sessions
         let sessions = [];
         if (filter === 'all' || filter === 'self') {
             sessions = [...sessions, ...selfStudySessions.map(session => ({...session, type: 'self-study'}))];
@@ -45,46 +33,35 @@ document.addEventListener('DOMContentLoaded', () => {
             sessions = [...sessions, ...guidedSessions.map(session => ({...session, type: 'guided'}))];
         }
         
-        // Sort sessions by date (newest first)
+        // Sorts sessions by date
         sessions.sort((a, b) => {
             const dateA = a.startTime ? new Date(a.startTime) : new Date(0);
             const dateB = b.startTime ? new Date(b.startTime) : new Date(0);
             return dateB - dateA;
         });
         
-        // Display no sessions message if no sessions
         if (sessions.length === 0) {
             sessionList.style.display = 'none';
             noSessionsMessage.style.display = 'block';
             return;
         }
-        
-        // Display sessions
         noSessionsMessage.style.display = 'none';
         sessionList.style.display = 'block';
         sessionDetails.style.display = 'none';
-        
-        // Clear session list
         sessionList.innerHTML = '';
-        
-        // Add each session to the list
         sessions.forEach((session, index) => {
             const sessionItem = createSessionListItem(session, index);
             sessionList.appendChild(sessionItem);
         });
     }
-    
-    // Function to create a session list item
+
     function createSessionListItem(session, index) {
         const sessionItem = document.createElement('div');
         sessionItem.className = 'session-list-item';
         sessionItem.setAttribute('data-index', index);
-        
-        // Format date
+
         const sessionDate = session.startTime ? new Date(session.startTime) : new Date();
         const formattedDate = formatDate(sessionDate);
-        
-        // Format duration
         let duration = 'N/A';
         if (session.duration) {
             duration = `${session.duration} minutes`;
@@ -93,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             duration = `${durationMinutes} minutes`;
         }
         
-        // Create badge based on session type
         const badgeClass = session.type === 'self-study' ? 'badge-self-study' : 'badge-guided';
         const badgeText = session.type === 'self-study' ? 'Self-Study' : 'Guided Study';
         
@@ -119,8 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ` : ''}
             </div>
         `;
-        
-        // Add click event to show session details
+
         sessionItem.addEventListener('click', () => {
             showSessionDetails(session);
         });
@@ -130,19 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to show session details
     function showSessionDetails(session) {
-        // Get session details content element
         const sessionDetailsContent = document.querySelector('.session-details-content');
         if (!sessionDetailsContent) return;
-        
-        // Hide session list and show details
         sessionList.style.display = 'none';
         sessionDetails.style.display = 'block';
-        
-        // Format date
+
         const sessionDate = session.startTime ? new Date(session.startTime) : new Date();
         const formattedDate = formatDate(sessionDate);
-        
-        // Format duration
+
         let duration = 'N/A';
         if (session.duration) {
             duration = `${session.duration} minutes`;
@@ -150,14 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const durationMinutes = Math.round((new Date(session.endTime) - new Date(session.startTime)) / (1000 * 60));
             duration = `${durationMinutes} minutes`;
         }
-        
-        // Create title based on session type
         const sessionTitle = session.title || (session.subject && session.topic ? `${session.subject} - ${session.topic}` : 'Untitled Session');
-        
-        // Get session type text
+
         const sessionTypeText = session.type === 'self-study' ? 'Self-Study Session' : 'Guided Study Session';
-        
-        // Create HTML for session details
+
         let detailsHTML = `
             <div class="session-detail-header">
                 <h2 class="session-detail-title">${sessionTitle}</h2>
@@ -251,12 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
         }
-        
-        // Set HTML for session details
+
         sessionDetailsContent.innerHTML = detailsHTML;
     }
-    
-    // Helper function to format date
+
     function formatDate(date) {
         const options = { 
             weekday: 'long', 
@@ -268,8 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return date.toLocaleDateString('en-US', options);
     }
-    
-    // Helper function to get study method name
+
     function getStudyMethodName(methodKey) {
         const methodNames = {
             'pomodoro': 'Pomodoro Technique',

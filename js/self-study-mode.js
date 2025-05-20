@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 blockedSitesList.textContent += ', ' + sessionData.customWebsites.join(', ');
             }
             
-            // Start timer
+            // Start timer using the shared function from app.js
             timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
             timer.start();
             
-            // Simulate blocking distractions
-            console.log(`Blocking distractions: ${[...sessionData.blockedDistractions, ...sessionData.customWebsites].join(', ')}`);
+            // Simulate blocking distractions using the shared function
+            blockDistractions([...sessionData.blockedDistractions, ...sessionData.customWebsites]);
             
             // Show study session
             setupSection.style.display = 'none';
@@ -149,27 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get session notes
             const sessionNotes = document.getElementById('session-notes').value;
             
-            // Calculate focus score
-            const calculatedFocusScore = calculateFocusScore();
+            // Calculate focus score using shared function
+            const calculatedFocusScore = calculateFocusScore(sessionData.pauseCount);
             
-            // Prepare session data for saving
-            const sessionToSave = {
-                ...sessionData,
+            // Save session using the shared function
+            saveStudySession('self', sessionData, {
                 notes: sessionNotes,
                 focusScore: calculatedFocusScore
-            };
-            
-            // Save using the SessionData module
-            if (window.SessionData) {
-                window.SessionData.saveSession('self', sessionToSave);
-                alert('Session saved successfully!');
-                
-                // Return to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                console.error('SessionData module not found');
-                alert('Error saving session. Please try again.');
-            }
+            });
         });
     }
     
@@ -198,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update UI
         completedDuration.textContent = `${sessionData.duration} minutes`;
-        focusScore.textContent = `${calculateFocusScore()}%`;
+        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
         
         // Show completion section
         studySession.style.display = 'none';
@@ -218,22 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update UI
         const actualDuration = Math.floor((sessionData.endTime - sessionData.startTime) / (1000 * 60));
         completedDuration.textContent = `${actualDuration} minutes (ended early)`;
-        focusScore.textContent = `${calculateFocusScore()}%`;
+        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
         
         // Show completion section
         studySession.style.display = 'none';
         sessionComplete.style.display = 'block';
-    }
-    
-    // Calculate focus score (simulated for demo)
-    function calculateFocusScore() {
-        // In a real application, this would be based on actual focus metrics
-        // For this demo, we'll generate a random score between 70-100,
-        // reduced by the number of times the user paused the timer
-        
-        const baseScore = Math.floor(Math.random() * 30) + 70; // 70-100
-        const pausePenalty = sessionData.pauseCount * 5; // -5 points per pause
-        
-        return Math.max(baseScore - pausePenalty, 50); // Minimum score of 50
     }
 });

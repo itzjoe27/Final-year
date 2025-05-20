@@ -48,17 +48,15 @@ console.log("loaded auth"); // troubleshooting
             console.log("Skip pressed");
             e.preventDefault();
             
-            // Create admin user data
+            // unfinished attempt at an admin mode for developing.
             const adminData = {
                 name: 'Admin User',
                 email: 'admin@studyassist.com',
             };
             
-            // Set admin user in local storage
             localStorage.setItem('studyAssistLoggedIn', 'true');
             localStorage.setItem('studyAssistUser', JSON.stringify(adminData));
             
-            // Redirect to dashboard
             window.location.href = 'dashboard.html';
         });
     }
