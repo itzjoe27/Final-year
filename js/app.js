@@ -152,7 +152,7 @@ function blockDistractions(distractions) {
 // Calculate focus score (simulated for demo)
 function calculateFocusScore(pauseCount) {
     // In a real application, this would be based on actual focus metrics
-    // For this demo, we'll generate a random score between 70-100,
+    // For this demo, it generates a random score between 70-100,
     // reduced by the number of times the user paused the timer
     
     const baseScore = Math.floor(Math.random() * 30) + 70; // 70-100

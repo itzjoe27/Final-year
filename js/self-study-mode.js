@@ -1,11 +1,6 @@
-/**
- * Study Assist Web App - Self-Study Mode JavaScript
- * 
- * This file contains functionality for the self-study mode
- */
+// Functionality for the self hosted study sessions.
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get elements
     const setupSection = document.getElementById('setup-section');
     const studySession = document.getElementById('study-session');
     const sessionComplete = document.getElementById('session-complete');
@@ -24,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveSessionBtn = document.getElementById('save-session-btn');
     const newSessionBtn = document.getElementById('new-session-btn');
     
-    // Session data
     let sessionData = {
         title: '',
         duration: 0,
@@ -38,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let timer = null;
     
-    // Show custom duration field if 'custom' is selected
     if (sessionDurationSelect) {
         sessionDurationSelect.addEventListener('change', () => {
             if (sessionDurationSelect.value === 'custom') {
@@ -51,12 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle setup form submission
     if (setupForm) {
         setupForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // Get form values
             const sessionTitle = document.getElementById('session-title').value;
             let sessionDuration = parseInt(sessionDurationSelect.value);
             
@@ -64,18 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionDuration = parseInt(customDuration.value);
             }
             
-            // Get blocked distractions
             const blockedDistractions = [];
             if (document.getElementById('block-social').checked) blockedDistractions.push('Social Media');
             if (document.getElementById('block-video').checked) blockedDistractions.push('Video Platforms');
             if (document.getElementById('block-news').checked) blockedDistractions.push('News Websites');
             if (document.getElementById('block-shopping').checked) blockedDistractions.push('Shopping Websites');
             
-            // Get custom websites
             const customWebsitesInput = document.getElementById('custom-websites').value;
             const customWebsites = customWebsitesInput ? customWebsitesInput.split(',').map(site => site.trim()) : [];
             
-            // Store session data
             sessionData = {
                 title: sessionTitle,
                 duration: sessionDuration,
@@ -87,27 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 pauseCount: 0
             };
             
-            // Update UI
             sessionTitleDisplay.textContent = sessionData.title;
             blockedSitesList.textContent = sessionData.blockedDistractions.join(', ');
             if (sessionData.customWebsites.length > 0) {
                 blockedSitesList.textContent += ', ' + sessionData.customWebsites.join(', ');
             }
             
-            // Start timer using the shared function from app.js
             timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
             timer.start();
             
-            // Simulate blocking distractions using the shared function
             blockDistractions([...sessionData.blockedDistractions, ...sessionData.customWebsites]);
             
-            // Show study session
             setupSection.style.display = 'none';
             studySession.style.display = 'block';
         });
     }
     
-    // Handle pause/resume timer
     if (pauseTimerBtn) {
         pauseTimerBtn.addEventListener('click', () => {
             if (!timer) return;
@@ -125,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle stop session
     if (stopSessionBtn) {
         stopSessionBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to stop the session?')) {
@@ -134,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle end session
     if (endSessionBtn) {
         endSessionBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to end this session early?')) {
@@ -143,16 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle save session
     if (saveSessionBtn) {
         saveSessionBtn.addEventListener('click', () => {
-            // Get session notes
             const sessionNotes = document.getElementById('session-notes').value;
-            
-            // Calculate focus score using shared function
-            const calculatedFocusScore = calculateFocusScore(sessionData.pauseCount);
-            
-            // Save session using the shared function
+            const calculatedFocusScore = calculateFocusScore(sessionData.pauseCount);            
             saveStudySession('self', sessionData, {
                 notes: sessionNotes,
                 focusScore: calculatedFocusScore
@@ -160,54 +135,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle new session
     if (newSessionBtn) {
         newSessionBtn.addEventListener('click', () => {
-            // Reset the form and UI
             setupForm.reset();
-            customDurationGroup.style.display = 'none';
-            
-            // Show setup section
+            customDurationGroup.style.display = 'none';            
             sessionComplete.style.display = 'none';
             setupSection.style.display = 'block';
         });
     }
     
-    // Complete session function
     function completeSession() {
-        // Stop the timer
         if (timer) {
             timer.stop();
-        }
-        
-        // Record end time
-        sessionData.endTime = new Date();
-        
-        // Update UI
+        }        
+        sessionData.endTime = new Date();        
         completedDuration.textContent = `${sessionData.duration} minutes`;
-        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
-        
-        // Show completion section
+        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;        
         studySession.style.display = 'none';
         sessionComplete.style.display = 'block';
     }
     
-    // End session function
     function endSession() {
-        // Stop the timer
         if (timer) {
             timer.stop();
         }
         
-        // Record end time
-        sessionData.endTime = new Date();
-        
-        // Update UI
+        sessionData.endTime = new Date();        
         const actualDuration = Math.floor((sessionData.endTime - sessionData.startTime) / (1000 * 60));
         completedDuration.textContent = `${actualDuration} minutes (ended early)`;
         focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
-        
-        // Show completion section
         studySession.style.display = 'none';
         sessionComplete.style.display = 'block';
     }
