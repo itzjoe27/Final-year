@@ -1,8 +1,4 @@
-/**
- * Study Assist Web App - Dashboard JavaScript
- * 
- * This file contains functionality for the dashboard page
- */
+// Functionality for the dashboard
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!window.SessionData) {
@@ -10,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    // Apply settings and show welcome message if enabled
     const settings = applySettings();
     if (settings.showTips) {
         addWelcomeMessage();

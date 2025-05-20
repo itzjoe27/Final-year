@@ -21,17 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    function loadSessions(filter) {
-        const selfStudySessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
-        const guidedSessions = JSON.parse(localStorage.getItem('guidedSessions') || '[]');
-        
-        let sessions = [];
-        if (filter === 'all' || filter === 'self') {
-            sessions = [...sessions, ...selfStudySessions.map(session => ({...session, type: 'self-study'}))];
-        }
-        if (filter === 'all' || filter === 'guided') {
-            sessions = [...sessions, ...guidedSessions.map(session => ({...session, type: 'guided'}))];
-        }
+   function loadSessions(filter) {
+    const allSessions = SessionData.getSessions();
+    
+    let sessions = [];
+    if (filter === 'all' || filter === 'self') {
+        sessions = [...sessions, ...allSessions.filter(session => session.type === 'self')];
+    }
+    if (filter === 'all' || filter === 'guided') {
+        sessions = [...sessions, ...allSessions.filter(session => session.type === 'guided')];
+    }
         
         // Sorts sessions by date
         sessions.sort((a, b) => {

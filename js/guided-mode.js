@@ -1,15 +1,9 @@
-/**
- * Study Assist Web App - Guided Study Mode JavaScript
- * 
- * This file contains functionality for the guided study mode
- */
+// Functionality for a guided study mode
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get step elements
     const steps = document.querySelectorAll('.step');
     const stepContents = document.querySelectorAll('.step-content');
     
-    // Get navigation buttons
     const nextStep1Btn = document.getElementById('next-step-1');
     const prevStep2Btn = document.getElementById('prev-step-2');
     const nextStep2Btn = document.getElementById('next-step-2');
@@ -17,14 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveGuidedBtn = document.getElementById('save-guided-btn');
     const newGuidedBtn = document.getElementById('new-guided-btn');
     
-    // Get form elements
     const studyMethodSelect = document.getElementById('study-method');
     const methodInfo = document.getElementById('method-info');
     const totalTimeSelect = document.getElementById('total-time');
     const customTimeGroup = document.getElementById('custom-time-group');
     const customTime = document.getElementById('custom-time');
     
-    // Session variables
     let sessionTimer = null;
     let sessionData = {
         subject: '',
@@ -43,23 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
         isBreak: false
     };
     
-    // Study method descriptions
     const methodDescriptions = {
         pomodoro: '<strong>Pomodoro Technique:</strong> Work for 25 minutes, then take a 5-minute break. After 4 pomodoros, take a longer 15-30 minute break.',
         blocks: '<strong>Study Blocks:</strong> Work for 50 minutes, then take a 10-minute break. Great for deep focus on complex topics.',
         spaced: '<strong>Spaced Repetition:</strong> Study material with increasing intervals between reviews. Ideal for memorization and long-term retention.',
         flowtime: '<strong>Flowtime Technique:</strong> Work until your focus naturally wanes, then take a break proportional to your work time. Great for creative work.'
     };
-    
-    // Study method configurations (work/break times in minutes)
-    const methodConfigs = {
+        const methodConfigs = {
         pomodoro: { workTime: 25, breakTime: 5, longBreakTime: 15, blocksBeforeLongBreak: 4 },
         blocks: { workTime: 50, breakTime: 10, longBreakTime: 20, blocksBeforeLongBreak: 2 },
         spaced: { workTime: 20, breakTime: 5, longBreakTime: 15, blocksBeforeLongBreak: 3 },
         flowtime: { workTime: 35, breakTime: 7, longBreakTime: 15, blocksBeforeLongBreak: 3 }
     };
     
-    // Activity-specific study tips
     const activityTips = {
         reading: [
             'Take notes in your own words to improve understanding',
@@ -87,14 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
     
-    // Initialize method info
     if (studyMethodSelect && methodInfo) {
         updateMethodInfo();
         
         studyMethodSelect.addEventListener('change', updateMethodInfo);
     }
-    
-    // Show custom time field if 'custom' is selected
     if (totalTimeSelect) {
         totalTimeSelect.addEventListener('change', () => {
             if (totalTimeSelect.value === 'custom') {
@@ -106,11 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
-    // Handle step navigation
-    if (nextStep1Btn) {
+        if (nextStep1Btn) {
         nextStep1Btn.addEventListener('click', () => {
-            // Validate step 1 form
             const subject = document.getElementById('subject').value;
             const topic = document.getElementById('topic').value;
             const objective = document.getElementById('learning-objective').value;
@@ -128,14 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Please fill out all required fields');
                 return;
             }
-            
-            // Store step 1 data
             sessionData.subject = subject;
             sessionData.topic = topic;
             sessionData.objective = objective;
             sessionData.activityType = activityType;
-            
-            // Move to step 2
             goToStep(2);
         });
     }
@@ -148,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (nextStep2Btn) {
         nextStep2Btn.addEventListener('click', () => {
-            // Validate step 2 form
             let totalTime = parseInt(totalTimeSelect.value);
             
             if (totalTimeSelect.value === 'custom') {
@@ -160,14 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const studyMethod = studyMethodSelect.value;
-            
-            // Get materials
             const materials = [];
             document.querySelectorAll('input[name="materials"]:checked').forEach(input => {
                 materials.push(input.value);
             });
-            
-            // Get distractions
             const distractions = [];
             const distractionsSelect = document.getElementById('distractions');
             if (distractionsSelect) {
@@ -177,28 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            
-            // Validate materials
             if (materials.length === 0) {
                 alert('Please select at least one study material');
                 return;
             }
-            
-            // Store step 2 data
+
             sessionData.totalTime = totalTime;
             sessionData.studyMethod = studyMethod;
             sessionData.materials = materials;
             sessionData.distractions = distractions;
-            
-            // Calculate study blocks based on method and total time
+
             const methodConfig = methodConfigs[studyMethod];
             sessionData.totalBlocks = Math.floor(totalTime / (methodConfig.workTime + methodConfig.breakTime));
             if (sessionData.totalBlocks < 1) sessionData.totalBlocks = 1;
             sessionData.currentBlock = 1;
             sessionData.isBreak = false;
             sessionData.startTime = new Date();
-            
-            // Update UI for step 3
             const sessionSubjectDisplay = document.getElementById('session-subject-display');
             const statusMessage = document.getElementById('status-message');
             const currentTask = document.getElementById('current-task');
@@ -214,32 +181,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentTask) {
                 currentTask.textContent = sessionData.objective;
             }
-            
-            // Start timer with work time
             const timerElement = document.getElementById('session-timer');
             const workTimeInSeconds = methodConfig.workTime * 60;
             if (timerElement) {
                 sessionTimer = createTimer(workTimeInSeconds, timerElement, onTimerComplete);
                 sessionTimer.start();
             }
-            
-            // Show study tips based on activity type
+    
             updateStudyTips(sessionData.activityType);
-            
-            // Simulate blocking distractions
+
             if (distractions.length > 0) {
                 console.log(`Blocking distractions: ${distractions.join(', ')}`);
             }
-            
-            // Update progress
+
             updateProgress();
-            
-            // Move to step 3
+
             goToStep(3);
         });
     }
-    
-    // Handle pause/resume timer
+
     const pauseTimerBtn = document.getElementById('pause-timer-btn');
     if (pauseTimerBtn) {
         pauseTimerBtn.addEventListener('click', () => {
@@ -254,8 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
-    // Handle skip break
+
     const skipBreakBtn = document.getElementById('skip-break-btn');
     if (skipBreakBtn) {
         skipBreakBtn.addEventListener('click', () => {
@@ -264,8 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             onTimerComplete();
         });
     }
-    
-    // Handle end session early
+
     if (endSessionBtn) {
         endSessionBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to end this session early?')) {
@@ -273,14 +231,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
-    // Handle save session
+
     if (saveGuidedBtn) {
         saveGuidedBtn.addEventListener('click', () => {
-            // Get session data
             const accomplishment = document.getElementById('accomplishment')?.value || '';
             const effectivenessRadios = document.querySelectorAll('input[name="effectiveness"]');
-            let effectiveness = '3'; // Default to middle value
+            let effectiveness = '3'; 
             
             for (let radio of effectivenessRadios) {
                 if (radio.checked) {
@@ -290,13 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const nextSteps = document.getElementById('next-steps')?.value || '';
-            
-            // Calculate actual duration in minutes
+
             const startTime = sessionData.startTime || new Date();
             const endTime = sessionData.endTime || new Date();
             const durationMinutes = Math.round((endTime - startTime) / (1000 * 60));
-            
-            // Prepare session data for saving
+
             const fullSessionData = {
                 ...sessionData,
                 accomplishment,
@@ -304,15 +258,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextSteps,
                 endTime,
                 duration: durationMinutes,
-                focusScore: effectiveness * 20 // Convert 1-5 scale to percentage (20-100)
+                focusScore: effectiveness * 20
             };
-            
-            // Save using SessionData module
+
             if (window.SessionData) {
                 window.SessionData.saveSession('guided', fullSessionData);
                 alert('Session saved successfully!');
-                
-                // Return to dashboard
+
                 window.location.href = 'dashboard.html';
             } else {
                 console.error('SessionData module not found');
@@ -320,25 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
-    // Handle new session
+
     if (newGuidedBtn) {
         newGuidedBtn.addEventListener('click', () => {
-            // Reset forms
+
             const goalsForm = document.getElementById('goals-form');
             const planForm = document.getElementById('plan-form');
             
             if (goalsForm) goalsForm.reset();
             if (planForm) planForm.reset();
-            
-            // Go back to step 1
+
             goToStep(1);
         });
     }
-    
-    // Helper functions
+
     function goToStep(stepNumber) {
-        // Update step indicators
+
         steps.forEach(step => {
             const stepNum = parseInt(step.getAttribute('data-step'));
             
@@ -352,8 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 step.classList.remove('active', 'completed');
             }
         });
-        
-        // Show appropriate step content
+
         stepContents.forEach((content, index) => {
             if (index + 1 === stepNumber) {
                 content.style.display = 'block';
@@ -377,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tipsList = studyTipsElement.querySelector('ul');
         if (!tipsList) return;
         
-        const tips = activityTips[activityType] || activityTips['reading']; // Default to reading tips
+        const tips = activityTips[activityType] || activityTips['reading']; 
         tipsList.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
     }
     
@@ -388,17 +336,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!methodConfig) return;
         
         if (sessionData.isBreak) {
-            // Finished a break, start next study block
+
             sessionData.isBreak = false;
             sessionData.currentBlock++;
             
             if (sessionData.currentBlock > sessionData.totalBlocks) {
-                // All blocks complete
+
                 completeSession();
                 return;
             }
-            
-            // Update UI for study block
+
             const statusIcon = document.getElementById('status-icon');
             const statusMessage = document.getElementById('status-message');
             const studyTips = document.getElementById('study-tips');
@@ -410,8 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (studyTips) studyTips.style.display = 'block';
             if (breakTips) breakTips.style.display = 'none';
             if (skipBreakBtn) skipBreakBtn.style.display = 'none';
-            
-            // Start timer with work time
+
             const timerElement = document.getElementById('session-timer');
             const workTimeInSeconds = methodConfig.workTime * 60;
             
@@ -420,14 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionTimer.start();
             }
         } else {
-            // Finished a study block, start break
+
             sessionData.isBreak = true;
-            
-            // Determine if this is a long break
+
             const isLongBreak = sessionData.currentBlock % methodConfig.blocksBeforeLongBreak === 0;
             const breakTimeInSeconds = (isLongBreak ? methodConfig.longBreakTime : methodConfig.breakTime) * 60;
-            
-            // Update UI for break
+
             const statusIcon = document.getElementById('status-icon');
             const statusMessage = document.getElementById('status-message');
             const studyTips = document.getElementById('study-tips');
@@ -443,8 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (studyTips) studyTips.style.display = 'none';
             if (breakTips) breakTips.style.display = 'block';
             if (skipBreakBtn) skipBreakBtn.style.display = 'inline-block';
-            
-            // Start timer with break time
+
             const timerElement = document.getElementById('session-timer');
             
             if (timerElement && typeof createTimer === 'function') {
@@ -452,8 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionTimer.start();
             }
         }
-        
-        // Update progress
+
         updateProgress();
     }
     
@@ -462,8 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const progressStats = document.querySelector('.progress-stats');
         
         if (!progressBar || !progressStats || !sessionData) return;
-        
-        // Calculate progress percentage
+
         let progressPercentage = 0;
         
         if (sessionData.totalBlocks > 0) {
@@ -471,11 +412,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentProgress = sessionData.isBreak ? 1 : 0.5;
             progressPercentage = ((completedBlocks + currentProgress) / sessionData.totalBlocks) * 100;
         }
-        
-        // Update progress bar
+
         progressBar.style.width = `${progressPercentage}%`;
-        
-        // Update progress stats
+
         if (methodConfigs && sessionData.studyMethod) {
             const completionText = document.createElement('span');
             completionText.textContent = `${Math.round(progressPercentage)}% Complete`;
@@ -498,15 +437,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function completeSession() {
-        // Stop timer
         if (sessionTimer) {
             sessionTimer.stop();
         }
         
-        // Record end time
         sessionData.endTime = new Date();
         
-        // Update summary UI
         const summarySubject = document.getElementById('summary-subject');
         const summaryTopic = document.getElementById('summary-topic');
         const summaryDuration = document.getElementById('summary-duration');
@@ -521,7 +457,6 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryMethod.textContent = selectedOption ? selectedOption.text : sessionData.studyMethod;
         }
         
-        // Go to step 4
         goToStep(4);
     }
 });
