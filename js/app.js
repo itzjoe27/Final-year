@@ -35,11 +35,24 @@ function handleLogout() {
         logoutBtn.addEventListener('click', () => {
             // Confirm logout
             if (confirm('Are you sure you want to log out?')) {
-                // Clear local storage except for remember me setting
+                // Clear local storage except for remember me setting and app settings
                 const rememberMe = localStorage.getItem('studyAssistRemember');
+                const darkMode = localStorage.getItem('darkMode');
+                const showTips = localStorage.getItem('showTips');
+                
                 localStorage.clear();
+                
                 if (rememberMe) {
                     localStorage.setItem('studyAssistRemember', rememberMe);
+                }
+                
+                // Preserve app settings
+                if (darkMode) {
+                    localStorage.setItem('darkMode', darkMode);
+                }
+                
+                if (showTips) {
+                    localStorage.setItem('showTips', showTips);
                 }
                 
                 // Redirect to login page
@@ -73,6 +86,12 @@ function loadUserData() {
             userEmailElement.textContent = userData.email || 'guest@example.com';
         }
     }
+}
+
+// Apply dark mode
+function applyDarkMode() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    document.body.classList.toggle('dark-mode', isDarkMode);
 }
 
 // Create a timer
@@ -182,8 +201,16 @@ function updateNavigation() {
     });
 }
 
+// Check if study tips should be shown
+function shouldShowTips() {
+    return localStorage.getItem('showTips') !== 'false'; // Default to true
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply dark mode
+    applyDarkMode();
+    
     // Check authentication
     if (!checkAuth()) return;
     
