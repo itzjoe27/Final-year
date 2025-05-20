@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (sessionDurationSelect.value === 'custom') {
                 sessionDuration = parseInt(customDuration.value);
+                if (!sessionDuration || sessionDuration < 5) {
+                    alert('Please enter a valid custom duration (minimum 5 minutes).');
+                    return;
+                }
             }
             
             const blockedDistractions = [];
@@ -75,19 +79,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 pauseCount: 0
             };
             
-            sessionTitleDisplay.textContent = sessionData.title;
-            blockedSitesList.textContent = sessionData.blockedDistractions.join(', ');
-            if (sessionData.customWebsites.length > 0) {
-                blockedSitesList.textContent += ', ' + sessionData.customWebsites.join(', ');
+            if (sessionTitleDisplay) {
+                sessionTitleDisplay.textContent = sessionData.title;
             }
             
-            timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
-            timer.start();
+            if (blockedSitesList) {
+                let blockedSitesText = sessionData.blockedDistractions.join(', ');
+                if (sessionData.customWebsites.length > 0) {
+                    if (blockedSitesText) {
+                        blockedSitesText += ', ';
+                    }
+                    blockedSitesText += sessionData.customWebsites.join(', ');
+                }
+                blockedSitesList.textContent = blockedSitesText;
+            }
             
+            // Create and start timer
+            if (sessionTimer) {
+                timer = createTimer(sessionDuration * 60, sessionTimer, completeSession);
+                timer.start();
+            }
+            
+            // Simulate blocking distractions
             blockDistractions([...sessionData.blockedDistractions, ...sessionData.customWebsites]);
             
-            setupSection.style.display = 'none';
-            studySession.style.display = 'block';
+            // Show study session, hide setup
+            if (setupSection) setupSection.style.display = 'none';
+            if (studySession) studySession.style.display = 'block';
         });
     }
     
@@ -110,8 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (stopSessionBtn) {
         stopSessionBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to stop the session?')) {
-                endSession();
+            if (confirm('Are you sure you want to stop the session? Your progress will not be saved.')) {
+                if (timer) {
+                    timer.stop();
+                }
+                // Reset the form and return to setup view
+                if (setupForm) setupForm.reset();
+                if (customDurationGroup) customDurationGroup.style.display = 'none';
+                if (studySession) studySession.style.display = 'none';
+                if (setupSection) setupSection.style.display = 'block';
             }
         });
     }
@@ -126,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (saveSessionBtn) {
         saveSessionBtn.addEventListener('click', () => {
-            const sessionNotes = document.getElementById('session-notes').value;
+            const sessionNotes = document.getElementById('session-notes')?.value || '';
             const calculatedFocusScore = calculateFocusScore(sessionData.pauseCount);            
             saveStudySession('self', sessionData, {
                 notes: sessionNotes,
@@ -137,10 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (newSessionBtn) {
         newSessionBtn.addEventListener('click', () => {
-            setupForm.reset();
-            customDurationGroup.style.display = 'none';            
-            sessionComplete.style.display = 'none';
-            setupSection.style.display = 'block';
+            if (setupForm) setupForm.reset();
+            if (customDurationGroup) customDurationGroup.style.display = 'none';            
+            if (sessionComplete) sessionComplete.style.display = 'none';
+            if (setupSection) setupSection.style.display = 'block';
         });
     }
     
@@ -148,11 +173,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timer) {
             timer.stop();
         }        
-        sessionData.endTime = new Date();        
-        completedDuration.textContent = `${sessionData.duration} minutes`;
-        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;        
-        studySession.style.display = 'none';
-        sessionComplete.style.display = 'block';
+        sessionData.endTime = new Date();
+        
+        if (completedDuration) {
+            completedDuration.textContent = `${sessionData.duration} minutes`;
+        }
+        
+        if (focusScore) {
+            focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
+        }
+        
+        if (studySession) studySession.style.display = 'none';
+        if (sessionComplete) sessionComplete.style.display = 'block';
     }
     
     function endSession() {
@@ -162,9 +194,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         sessionData.endTime = new Date();        
         const actualDuration = Math.floor((sessionData.endTime - sessionData.startTime) / (1000 * 60));
-        completedDuration.textContent = `${actualDuration} minutes (ended early)`;
-        focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
-        studySession.style.display = 'none';
-        sessionComplete.style.display = 'block';
+        
+        if (completedDuration) {
+            completedDuration.textContent = `${actualDuration} minutes (ended early)`;
+        }
+        
+        if (focusScore) {
+            focusScore.textContent = `${calculateFocusScore(sessionData.pauseCount)}%`;
+        }
+        
+        if (studySession) studySession.style.display = 'none';
+        if (sessionComplete) sessionComplete.style.display = 'block';
     }
 });

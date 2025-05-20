@@ -1,22 +1,23 @@
 // login manager
 
 document.addEventListener('DOMContentLoaded', () => {
-console.log("loaded auth");
+    console.log("loaded auth");
 
-    // Get form
+    // Get form elements
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const showRegisterLink = document.getElementById('showRegister');
     const showLoginLink = document.getElementById('showLogin');
+    const skipLoginBtn = document.getElementById('skipLoginBtn');
     
-    //  not working register system, login works fine
-    // if (showRegisterLink) {
-    //     showRegisterLink.addEventListener('click', (e) => {
-    //         e.preventDefault();
-    //         loginForm.style.display = 'none';
-    //         registerForm.style.display = 'block';
-    //     });
-    // }
+    // Registration system toggle (disabled for now)
+    if (showRegisterLink) {
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+    }
     
     if (showLoginLink) {
         showLoginLink.addEventListener('click', (e) => {
@@ -26,7 +27,25 @@ console.log("loaded auth");
         });
     }
     
+    // Skip login button for development/testing
+    if (skipLoginBtn) {
+        skipLoginBtn.addEventListener('click', (e) => {
+            console.log("Skip pressed");
+            e.preventDefault();
+            
+            // Admin mode for developing - just skips login
+            const adminData = {
+                name: 'Admin User',
+                email: 'admin@studyassist.com',
+            };
+            
+            localStorage.setItem('studyAssistLoggedIn', 'true');
+            localStorage.setItem('studyAssistUser', JSON.stringify(adminData));
+            window.location.href = 'dashboard.html';
+        });
+    }
 
+    // Handle login form submission
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             console.log("login pressed");
@@ -40,27 +59,7 @@ console.log("loaded auth");
                 alert('Please enter both email and password.');
                 return;
             }
-
-            //skip button to make demo easier - login is not working all the time. Neither is skip for some reason, use whatever works.
-    if (skipLoginBtn) {
-        skipLoginBtn.addEventListener('click', (e) => {
-            console.log("Skip pressed");
-            e.preventDefault();
             
-            // unfinished attempt at an admin mode for developing.
-            const adminData = {
-                name: 'Admin User',
-                email: 'admin@studyassist.com',
-            };
-            
-            localStorage.setItem('studyAssistLoggedIn', 'true');
-            localStorage.setItem('studyAssistUser', JSON.stringify(adminData));
-            
-            window.location.href = 'dashboard.html';
-        });
-    }
-            
-           
             // Store user in local storage
             const userData = {
                 email: email,
@@ -70,7 +69,7 @@ console.log("loaded auth");
             localStorage.setItem('studyAssistLoggedIn', 'true');
             localStorage.setItem('studyAssistUser', JSON.stringify(userData));
             
-            // future feature maybe
+            // Future feature for remember me
             // if (rememberMe) {
             //     localStorage.setItem('studyAssistRemember', 'true');
             // } else {
@@ -80,5 +79,4 @@ console.log("loaded auth");
             window.location.href = 'dashboard.html';
         });
     }
-    
 });

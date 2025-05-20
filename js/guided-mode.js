@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         spaced: '<strong>Spaced Repetition:</strong> Study material with increasing intervals between reviews. Ideal for memorization and long-term retention.',
         flowtime: '<strong>Flowtime Technique:</strong> Work until your focus naturally wanes, then take a break proportional to your work time. Great for creative work.'
     };
-        const methodConfigs = {
+    
+    const methodConfigs = {
         pomodoro: { workTime: 25, breakTime: 5, longBreakTime: 15, blocksBeforeLongBreak: 4 },
         blocks: { workTime: 50, breakTime: 10, longBreakTime: 20, blocksBeforeLongBreak: 2 },
         spaced: { workTime: 20, breakTime: 5, longBreakTime: 15, blocksBeforeLongBreak: 3 },
@@ -91,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-        if (nextStep1Btn) {
+    
+    if (nextStep1Btn) {
         nextStep1Btn.addEventListener('click', () => {
             const subject = document.getElementById('subject').value;
             const topic = document.getElementById('topic').value;
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextSteps,
                 endTime,
                 duration: durationMinutes,
-                focusScore: effectiveness * 20
+                focusScore: effectiveness * 20  // Convert 1-5 rating to percentage
             };
 
             if (window.SessionData) {
@@ -275,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (newGuidedBtn) {
         newGuidedBtn.addEventListener('click', () => {
-
             const goalsForm = document.getElementById('goals-form');
             const planForm = document.getElementById('plan-form');
             
@@ -287,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function goToStep(stepNumber) {
-
         steps.forEach(step => {
             const stepNum = parseInt(step.getAttribute('data-step'));
             
@@ -336,12 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!methodConfig) return;
         
         if (sessionData.isBreak) {
-
+            // End of break period
             sessionData.isBreak = false;
             sessionData.currentBlock++;
             
             if (sessionData.currentBlock > sessionData.totalBlocks) {
-
+                // Session complete
                 completeSession();
                 return;
             }
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionTimer.start();
             }
         } else {
-
+            // End of study period
             sessionData.isBreak = true;
 
             const isLongBreak = sessionData.currentBlock % methodConfig.blocksBeforeLongBreak === 0;
@@ -416,9 +416,10 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = `${progressPercentage}%`;
 
         if (methodConfigs && sessionData.studyMethod) {
+            progressStats.innerHTML = '';            
             const completionText = document.createElement('span');
             completionText.textContent = `${Math.round(progressPercentage)}% Complete`;
-            
+            progressStats.appendChild(completionText);            
             const remainingText = document.createElement('span');
             const methodConfig = methodConfigs[sessionData.studyMethod];
             
@@ -429,9 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
                 remainingText.textContent = `${remainingMinutes} minutes remaining`;
             }
-            
-            progressStats.innerHTML = '';
-            progressStats.appendChild(completionText);
             progressStats.appendChild(remainingText);
         }
     }

@@ -1,6 +1,4 @@
-/* Condensed CSS for Study Assist
- * Combines functionality from style.css, dark-mode.css, and additional.css
- */
+/* the combined css of every page */
 
 :root {
   /* Light theme variables */
@@ -360,6 +358,43 @@ label {
   color: var(--primary-color);
   margin-right: 1rem;
 }
+
+/* Progress bar styles */
+.progress-container {
+  margin: 1.5rem 0;
+}
+
+.progress-bar {
+  background-color: var(--gray-200);
+  border-radius: 5px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  background-color: var(--primary-color);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+body.dark-mode .progress-bar {
+  background-color: var(--dark-gray-200);
+}
+
+body.dark-mode .progress {
+  background-color: var(--dark-primary-light);
+}
+
+
+
 
 /* Login/Auth pages */
 .auth-page {
